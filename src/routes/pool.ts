@@ -26,12 +26,25 @@ export async function poolRoutes(fastify: FastifyInstance) {
 
 		try {
 			await req.jwtVerify();
-		} catch {
+
 			await prisma.pool.create({
 				data: {
 					title,
 					code,
 					ownerId: req.user.sub,
+
+					participants: {
+						create: {
+							userId: req.user.sub,
+						},
+					},
+				},
+			});
+		} catch {
+			await prisma.pool.create({
+				data: {
+					title,
+					code,
 				},
 			});
 		}
@@ -99,7 +112,7 @@ export async function poolRoutes(fastify: FastifyInstance) {
 		{
 			onRequest: [authenticate],
 		},
-		async (req, reply) => {
+		async (req) => {
 			const pools = await prisma.pool.findMany({
 				where: {
 					participants: {

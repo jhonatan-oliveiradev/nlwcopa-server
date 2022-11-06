@@ -1,5 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { z } from "zod";
+
 import { prisma } from "../lib/prisma";
 import { authenticate } from "../plugins/authenticate";
 
@@ -42,7 +43,7 @@ export async function guessRoutes(fastify: FastifyInstance) {
 
 			if (!participant) {
 				return reply.status(404).send({
-					error: "You're not allowed to create a guess for this pool",
+					message: "You're not allowed to create a guess for this pool",
 				});
 			}
 
@@ -57,7 +58,7 @@ export async function guessRoutes(fastify: FastifyInstance) {
 
 			if (guess) {
 				return reply.status(409).send({
-					error: "You already created a guess for this game",
+					message: "You already made a guess for this game",
 				});
 			}
 
@@ -69,13 +70,13 @@ export async function guessRoutes(fastify: FastifyInstance) {
 
 			if (!game) {
 				return reply.status(404).send({
-					error: "Game not found",
+					message: "Game not found",
 				});
 			}
 
 			if (game.date < new Date()) {
 				return reply.status(400).send({
-					error: "You can't create a guess for a game that already started",
+					message: "You can't create a guess for a game that already started",
 				});
 			}
 
@@ -93,6 +94,8 @@ export async function guessRoutes(fastify: FastifyInstance) {
 				gameId,
 				firstTeamPoints,
 				secondTeamPoints,
+
+				// return reply.status(201).send()
 			};
 		}
 	);
